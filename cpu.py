@@ -38,7 +38,36 @@ def readInst():
             print(regs[p1])
             print(binToDec(regs[p1]))
 
+        if inst.split()[0] == 'sub':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            regs[p1] = sub(regs[p1],regs[p2])
+            print(regs[p1])
+            print(binToDec(regs[p1]))
 
+        if inst.split()[0] == 'subi':
+            p1 = inst.split()[1]
+            imm = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if imm is None:
+                print('invalid instruction format')
+                break
+
+            binImm = decToBin(int(imm))
+            regs[p1] = sub(regs[p1],binImm)
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+        if inst.split()[0] == 'print':
+            printRegs()
+    printRegs()
 
 def add(reg1, reg2):
     result = [0]*16
@@ -47,7 +76,7 @@ def add(reg1, reg2):
     carry = 0
     sum = 0 
     #big endian so traverse in reverse
-    for index in range(len(reg1)-1,-1,-1):
+    for index in range(15,-1,-1):
         sum = reg1[index] + reg2[index] + carry
         if sum == 0:
             result[index] = 0
@@ -61,6 +90,29 @@ def add(reg1, reg2):
         elif sum == 3:
             result[index] = 1
             carry = 1
+    return result
+
+def sub(reg1,reg2):
+    result = [0]*16
+    print('subbing')
+    print(binToDec(reg1),' = ', binToDec(reg1) ,' - ' , binToDec(reg2))
+    borrow = 0
+    diff = 0
+
+    for index in range(15,-1,-1):
+        diff = reg1[index] - reg2[index] - borrow
+        if diff == 0:
+            result[index] = 0
+            borrow = 0
+        elif diff == 1:
+            result[index] = 1
+            borrow = 0
+        elif diff == -1:
+            result[index] = 1
+            borrow = 1
+        elif diff == -2:
+            result[index] = 0
+            borrow = 1
     return result
 
 
@@ -79,5 +131,11 @@ def decToBin(dec):
     return bin
 
 
+def printRegs():
+    for reg in regs:
+        print(reg,': ',regs[reg], binToDec(regs[reg]))
+
+#printRegs()
+#print(sub(decToBin(5),decToBin(4)))
 #print(decToBin(1))
 readInst()
