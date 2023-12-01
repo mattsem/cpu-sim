@@ -5,6 +5,12 @@ mem = [[0]*cols]*rows
 #print(mem)
 
 
+#instr memory
+global instrMem
+global pc
+pc = [0]*16
+
+
 
 #registers
 r1 = [1]*16
@@ -90,6 +96,41 @@ def readInst():
 
         if inst.split()[0] == 'print':
             printRegs()
+
+        if inst.split()[0] == 'load':
+            p1 = inst.split()[1]
+            memory = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if memory is None:
+                print('invalid instruction format')
+                break
+            regs[p1] = load(regs[p1],int(memory))
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+
+        if inst.split()[0] == 'store':
+            memory = inst.split()[1]
+            p1 = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if memory is None:
+                print('invalid instruction format')
+                break
+            store(int(memory),regs[p1])
+
+        if inst.split()[0] == 'read':
+            readFile()
+
+        if inst.split()[0] == 'run':
+            runFile()
+
+        if inst.split()[0] == 'jump':
+            jump(inst.split()[1])
+        
+
     printRegs()
 
 def add(reg1, reg2):
@@ -151,10 +192,13 @@ def naiveMul(reg1,reg2):
     return result
 
 
+def jump(address):
+    global pc
+    pc = decToBin(address)
+
 def load(reg, memory):
     print('loading')
-    reg = mem[memory]
-    printRegs()
+    return mem[memory]
 
 
 def store(memory, reg):
@@ -162,6 +206,14 @@ def store(memory, reg):
     mem[memory] = reg
     print(mem)
     printRegs()
+
+
+def readFile():
+    global instrMem
+    instructions = open('cpu-sim/instr.txt','r')
+    instrMem = [line.strip() for line in instructions]
+    instructions.close()
+    printInstr()
 
 def binToDec(reg):
     dec = 0
@@ -181,6 +233,120 @@ def decToBin(dec):
 def printRegs():
     for reg in regs:
         print(reg,': ',regs[reg], binToDec(regs[reg]))
+
+def printInstr():
+    print(instrMem)
+
+
+def runFile():
+    global pc
+    pc = decToBin(0)
+    while binToDec(pc) != 65535:
+        inst = instrMem[binToDec(pc)]
+        pc = add(pc,decToBin(1))
+
+        if inst.split()[0] == 'end':
+            pc = decToBin(65535)
+        
+        if inst.split()[0] == 'add':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            regs[p1] = add(regs[p1],regs[p2])
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+
+        if inst.split()[0] == 'addi':
+            p1 = inst.split()[1]
+            imm = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if imm is None:
+                print('invalid instruction format')
+                break
+
+            binImm = decToBin(int(imm))
+            regs[p1] = add(regs[p1],binImm)
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+
+        if inst.split()[0] == 'sub':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            regs[p1] = sub(regs[p1],regs[p2])
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+
+        if inst.split()[0] == 'subi':
+            p1 = inst.split()[1]
+            imm = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if imm is None:
+                print('invalid instruction format')
+                break
+
+            binImm = decToBin(int(imm))
+            regs[p1] = sub(regs[p1],binImm)
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+
+        if inst.split()[0] == 'mul':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            regs[p1] = naiveMul(regs[p1],regs[p2])
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+
+        if inst.split()[0] == 'print':
+            printRegs()
+
+        if inst.split()[0] == 'load':
+            p1 = inst.split()[1]
+            memory = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if memory is None:
+                print('invalid instruction format')
+                break
+            regs[p1] = load(regs[p1],int(memory))
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+
+        if inst.split()[0] == 'store':
+            memory = inst.split()[1]
+            p1 = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if memory is None:
+                print('invalid instruction format')
+                break
+            store(int(memory),regs[p1])
+
+        if inst.split()[0] == 'jump':
+            jump(inst.split()[1])
+
 
 #printRegs()
 #print(sub(decToBin(5),decToBin(4)))
