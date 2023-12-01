@@ -129,6 +129,30 @@ def readInst():
 
         if inst.split()[0] == 'jump':
             jump(inst.split()[1])
+
+        if inst.split()[0] == 'beq':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            addr = inst.split()[3]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            branchEq(regs[p1],regs[p2],int(addr))
+
+        if inst.split()[0] == 'bnq':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            addr = inst.split()[3]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            branchNeq(regs[p1],regs[p2],int(addr))
         
 
     printRegs()
@@ -196,6 +220,21 @@ def jump(address):
     global pc
     pc = decToBin(address)
 
+def branchEq(reg1,reg2,address):
+    if sub(reg1,reg2) == decToBin(0):
+        jump(address)
+        print('branching to ', address)
+    else:
+        print('not branching')
+
+
+def branchNeq(reg1,reg2,address):
+    if sub(reg1,reg2) != decToBin(0):
+        jump(address)
+        print('branching to ', address)
+    else:
+        print('not branching')
+
 def load(reg, memory):
     print('loading')
     return mem[memory]
@@ -240,7 +279,7 @@ def printInstr():
 
 def runFile():
     global pc
-    pc = decToBin(0)
+    pc = sub(pc,pc)
     while binToDec(pc) != 65535:
         inst = instrMem[binToDec(pc)]
         pc = add(pc,decToBin(1))
@@ -346,6 +385,32 @@ def runFile():
 
         if inst.split()[0] == 'jump':
             jump(inst.split()[1])
+        
+        if inst.split()[0] == 'beq':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            addr = inst.split()[3]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            branchEq(regs[p1],regs[p2],int(addr))
+
+        if inst.split()[0] == 'bnq':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            addr = inst.split()[3]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            branchNeq(regs[p1],regs[p2],int(addr))
+
+    print('PROGRAM COMPLETED')
 
 
 #printRegs()

@@ -1,3 +1,5 @@
+addi r3 4450
 addi r2 1
+bnq r2 r3 1
 print
 end
