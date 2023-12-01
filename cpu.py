@@ -1,3 +1,12 @@
+#main memory
+cols,rows = 16,16
+
+mem = [[0]*cols]*rows
+#print(mem)
+
+
+
+#registers
 r1 = [1]*16
 r2 = [0]*16
 r3 = [0]*16
@@ -65,6 +74,20 @@ def readInst():
             regs[p1] = sub(regs[p1],binImm)
             print(regs[p1])
             print(binToDec(regs[p1]))
+
+        if inst.split()[0] == 'mul':
+            p1 = inst.split()[1]
+            p2 = inst.split()[2]
+            if p1 is None or p1 not in regs:
+                print('invalid instruction format')
+                break
+            if p2 is None or p2 not in regs:
+                print('invalid instruction format')
+                break
+            regs[p1] = naiveMul(regs[p1],regs[p2])
+            print(regs[p1])
+            print(binToDec(regs[p1]))
+
         if inst.split()[0] == 'print':
             printRegs()
     printRegs()
@@ -115,6 +138,30 @@ def sub(reg1,reg2):
             borrow = 1
     return result
 
+
+def naiveMul(reg1,reg2):
+    print('multiplying')
+    print(binToDec(reg1),' = ', binToDec(reg1) ,' * ' , binToDec(reg2))
+    result = reg1
+    if binToDec(reg2) == 0 or binToDec(reg1) == 0:
+        result = decToBin(0)
+        return result
+    for addition in range(1,binToDec(reg2)):
+            result = add(result,reg1)
+    return result
+
+
+def load(reg, memory):
+    print('loading')
+    reg = mem[memory]
+    printRegs()
+
+
+def store(memory, reg):
+    print('storing')
+    mem[memory] = reg
+    print(mem)
+    printRegs()
 
 def binToDec(reg):
     dec = 0
