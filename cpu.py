@@ -13,12 +13,20 @@ pc = [0]*16
 
 
 #registers
+r0 = [0]*16
 r1 = [1]*16
 r2 = [0]*16
 r3 = [0]*16
 r4 = [0]*16
+rr = [0]*16
 
-regs = {'r1': r1, 'r2': r2, 'r3': r3, 'r4': r4}
+regs = {'r0': r0,'r1': r1, 'r2': r2, 'r3': r3, 'r4': r4,'rr':rr}
+
+#r0 always zero
+freeRegs = [1,1,0,0,0]
+
+
+functions = {}
 
 def readInst():
     inst = None
@@ -153,6 +161,7 @@ def readInst():
                 print('invalid instruction format')
                 break
             branchNeq(regs[p1],regs[p2],int(addr))
+       
         
 
     printRegs()
@@ -285,6 +294,7 @@ def runFile():
         pc = add(pc,decToBin(1))
 
         if inst.split()[0] == 'end':
+            printRegs()
             pc = decToBin(65535)
         
         if inst.split()[0] == 'add':
@@ -409,6 +419,19 @@ def runFile():
                 print('invalid instruction format')
                 break
             branchNeq(regs[p1],regs[p2],int(addr))
+
+        if inst.split()[0] == 'func:':
+            functions.update({inst.split()[1] : binToDec(pc)})
+            print(functions)
+
+        if inst.split()[0] == 'ret':
+            regs['rr'] = regs[inst.split()[1]]
+            print(regs['rr'],binToDec(regs['rr']))
+
+        if inst.split()[0] in functions:
+            print('jumping to func:',inst.split()[0])
+            jump(functions[inst.split()[0]])
+            
 
     print('PROGRAM COMPLETED')
 
