@@ -1,9 +1,9 @@
-addi r2 1
-addi r3 1
-addi r4 15
-mul r2 r3
-addi r3 1
-bnq r4 r3 3
-mul r2 r3
-ret r2
+print
+loop
+print
 end
+func: loop
+addi r2 1
+print
+bnq r2 r1 1
+ret r2

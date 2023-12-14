@@ -8,8 +8,11 @@ mem = [[0]*cols]*rows
 #instr memory
 global instrMem
 global pc
+global lr
+global sp
 pc = [0]*16
-
+lr = [0]*16
+sp = [0]*16
 
 
 #registers
@@ -168,8 +171,8 @@ def readInst():
 
 def add(reg1, reg2):
     result = [0]*16
-    print('adding')
-    print(binToDec(reg1),' = ', binToDec(reg1) ,' + ' , binToDec(reg2))
+    #print('adding')
+    #print(binToDec(reg1),' = ', binToDec(reg1) ,' + ' , binToDec(reg2))
     carry = 0
     sum = 0 
     #big endian so traverse in reverse
@@ -191,8 +194,8 @@ def add(reg1, reg2):
 
 def sub(reg1,reg2):
     result = [0]*16
-    print('subbing')
-    print(binToDec(reg1),' = ', binToDec(reg1) ,' - ' , binToDec(reg2))
+    #print('subbing')
+    #print(binToDec(reg1),' = ', binToDec(reg1) ,' - ' , binToDec(reg2))
     borrow = 0
     diff = 0
 
@@ -260,6 +263,13 @@ def readFile():
     global instrMem
     instructions = open('cpu-sim/instr.txt','r')
     instrMem = [line.strip() for line in instructions]
+    line = 0
+    for inst in instrMem:
+        if inst.split()[0] == 'func:':
+            functions.update({inst.split()[1] : line})
+            print(functions)
+        line +=1
+
     instructions.close()
     printInstr()
 
@@ -288,11 +298,13 @@ def printInstr():
 
 def runFile():
     global pc
+    global lr
     pc = sub(pc,pc)
     while binToDec(pc) != 65535:
         inst = instrMem[binToDec(pc)]
         pc = add(pc,decToBin(1))
-
+        print(inst)
+        print(binToDec(pc))
         if inst.split()[0] == 'end':
             printRegs()
             pc = decToBin(65535)
@@ -420,19 +432,23 @@ def runFile():
                 break
             branchNeq(regs[p1],regs[p2],int(addr))
 
-        if inst.split()[0] == 'func:':
-            functions.update({inst.split()[1] : binToDec(pc)})
-            print(functions)
+        #if inst.split()[0] == 'func:':
+         #   functions.update({inst.split()[1] : binToDec(pc)})
+          #  print(functions)
+
 
         if inst.split()[0] == 'ret':
             regs['rr'] = regs[inst.split()[1]]
             print(regs['rr'],binToDec(regs['rr']))
+            pc = lr
 
         if inst.split()[0] in functions:
             print('jumping to func:',inst.split()[0])
-            jump(functions[inst.split()[0]])
+            lr = pc
+            jump(functions[inst.split()[0]]+1)
+        
+        
             
-
     print('PROGRAM COMPLETED')
 
 
