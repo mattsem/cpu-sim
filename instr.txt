@@ -1,9 +1,3 @@
-print
-loop
-print
+int a
+a
 end
-func: loop
-addi r2 1
-print
-bnq r2 r1 1
-ret r2

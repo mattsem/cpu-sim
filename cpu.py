@@ -21,12 +21,23 @@ r1 = [1]*16
 r2 = [0]*16
 r3 = [0]*16
 r4 = [0]*16
+r5 = [0]*16
+r6 = [0]*16
+r7 = [0]*16
+r8 = [0]*16
+r9 = [0]*16
+r10 = [0]*16
+r11 = [0]*16
+r12 = [0]*16
+r13 = [0]*16
 rr = [0]*16
 
-regs = {'r0': r0,'r1': r1, 'r2': r2, 'r3': r3, 'r4': r4,'rr':rr}
+regs = {'r0': r0,'r1': r1, 'r2': r2, 'r3': r3, 'r4': r4,'r5': r5, 'r6' : r6, 'r7' : r7, 'r8': r8, 'r9':r9, 'r10': r10, 'r11':r11, 'r12' : r12, 'r13':r13, 'rr':rr}
 
 #r0 always zero
-freeRegs = [1,1,0,0,0]
+freeRegs = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,1]
+
+variables = {}
 
 
 functions = {}
@@ -304,7 +315,7 @@ def runFile():
         inst = instrMem[binToDec(pc)]
         pc = add(pc,decToBin(1))
         print(inst)
-        print(binToDec(pc))
+        #print(binToDec(pc))
         if inst.split()[0] == 'end':
             printRegs()
             pc = decToBin(65535)
@@ -446,6 +457,21 @@ def runFile():
             print('jumping to func:',inst.split()[0])
             lr = pc
             jump(functions[inst.split()[0]]+1)
+
+        if inst.split()[0] == 'int':
+            for index in range(len(freeRegs)):
+                if freeRegs[index] == 0:
+                    variables.update({inst.split()[1] : index})
+                    freeRegs[index] = 1
+                    break
+            print(freeRegs)
+            print(variables)
+            
+
+        if inst.split()[0] in variables:
+            suffix = variables[inst.split()[0]]
+            print(inst.split()[0], ' : ', regs['r'+str(suffix)], binToDec(regs['r'+str(suffix)]))
+
         
         
             
