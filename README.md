@@ -10,4 +10,4 @@ File with CPU logic
 # instr.txt
 Instruction file
 
-![image]()
+![image](https://github.com/mattsem/cpu-sim/blob/main/images/output.png)
