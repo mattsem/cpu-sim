@@ -9,3 +9,5 @@ File with CPU logic
 
 # instr.txt
 Instruction file
+
+![image]()
